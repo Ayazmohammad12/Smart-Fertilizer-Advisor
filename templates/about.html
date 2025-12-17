@@ -4,7 +4,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Fertilizer Recommending Machine - About Us</title>
+
     <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+
     <style>
         .about-section {
             padding: 40px;
@@ -32,48 +34,61 @@
         }
     </style>
 </head>
+
 <body>
 
-    <header>
-        <div class="navbar-container">
-            <div class="logo">Fertilizer Recommending Machine</div>
-            <nav class="main-nav">
-                <a href="index.html" class="nav-button">Home</a>
-                <a href="projects.html" class="nav-button">Projects</a>
-                <a href="about.html" class="nav-button">About Us</a>
-            </nav>
+<header>
+    <div class="navbar-container">
+        <div class="logo">Fertilizer Recommending Machine</div>
+        <nav class="main-nav">
+            <!-- ✅ FIXED LINES -->
+            <a href="{{ url_for('index') }}" class="nav-button">Home</a>
+            <a href="{{ url_for('projects') }}" class="nav-button">Projects</a>
+            <a href="{{ url_for('about') }}" class="nav-button">About Us</a>
+        </nav>
+    </div>
+</header>
+
+<section class="about-section">
+    <div class="about-content">
+
+        <div class="info-block">
+            <h2>About the Project</h2>
+            <p>
+                The Fertilizer Recommending Machine is a cutting-edge agricultural technology project designed to bridge the gap between traditional farming and modern data science. This system utilizes advanced Machine Learning algorithms, specifically the Random Forest Classifier, to analyze complex soil data and chemical parameters in real-time. By processing inputs such as pH levels, Nitrogen, Phosphorus, and Potassium (NPK) content, and moisture levels, the engine can accurately predict whether a specific fertilizer blend is safe for use or potentially toxic to plants. Our goal is to replace guesswork in farming with precise, scientific calculations that ensure every crop gets exactly what it needs to thrive. This project integrates multiple modules including live disease detection via YOLO computer vision and chemical toxicity checks, creating a comprehensive dashboard for modern agronomy. We believe that by digitizing soil health, we can protect the environment while maximizing the efficiency of every square meter of farmland across the globe.
+            </p>
         </div>
-    </header>
 
-    <section class="about-section">
-        <div class="about-content">
-            <div class="info-block">
-                <h2>About the Project</h2>
-                <p>The Fertilizer Recommending Machine is a cutting-edge agricultural technology project designed to bridge the gap between traditional farming and modern data science. This system utilizes advanced Machine Learning algorithms, specifically the Random Forest Classifier, to analyze complex soil data and chemical parameters in real-time. By processing inputs such as pH levels, Nitrogen, Phosphorus, and Potassium (NPK) content, and moisture levels, the engine can accurately predict whether a specific fertilizer blend is safe for use or potentially toxic to plants. Our goal is to replace guesswork in farming with precise, scientific calculations that ensure every crop gets exactly what it needs to thrive. This project integrates multiple modules including live disease detection via YOLO computer vision and chemical toxicity checks, creating a comprehensive dashboard for modern agronomy. We believe that by digitizing soil health, we can protect the environment while maximizing the efficiency of every square meter of farmland across the globe.</p>
-            </div>
-
-            <div class="info-block">
-                <h3>The Role of Fertilizers and Their Uses</h3>
-                <p>Fertilizers are the lifeblood of global food production, providing essential nutrients that are often depleted from soil through continuous cultivation. Primary macronutrients such as Nitrogen are responsible for leaf growth and the vibrant green color associated with healthy chlorophyll production, while Phosphorus is vital for strong root development, flower induction, and seed formation. Potassium acts as a regulator, strengthening the plant's immune system against diseases and ensuring efficient water movement within the cellular structure. Beyond these, secondary chemicals like Magnesium and Calcium provide the structural integrity required for plants to withstand environmental stress. Our system categorizes these into various types: nitrogenous fertilizers for vegetative growth, phosphatic for early development, and organic fertilizers like compost for long-term soil structure improvement. Proper usage of these chemicals ensures that the soil remains fertile for generations rather than being stripped of its vitality. Understanding the chemical balance is not just about plant growth; it is about maintaining a healthy ecosystem where the soil and the plant work in harmony to produce high-quality, nutrient-dense food for the population.</p>
-            </div>
-
-            <div class="info-block">
-                <h3>How It Empowers Farmers</h3>
-                <p>For the modern farmer, this tool serves as a digital consultant that is available 24/7 to provide expert-level soil analysis and fertilizer recommendations. One of the greatest challenges farmers face is the rising cost of inputs; by using our Fertilizer Recommending Machine, farmers can avoid the expensive mistake of over-fertilization, which not only wastes money but also damages the soil through salt buildup. The system provides actionable insights that allow farmers to tailor their chemical applications to the specific needs of their unique land plots, leading to significantly higher crop yields and better produce quality. Furthermore, the early disease detection module helps farmers identify blight or pest infestations before they spread, potentially saving entire harvests from destruction. By simplifying complex chemical data into easy-to-understand recommendations in local languages like Tamil and English, we remove the technical barriers that often prevent small-scale farmers from adopting new technologies. This empowerment leads to better financial stability for farming families and ensures that agricultural practices are sustainable, safe, and profitable in an increasingly unpredictable climate. Farmers gain the confidence to invest in their crops knowing that their decisions are backed by data rather than intuition.</p>
-            </div>
-
-            <div class="info-block">
-                <h3>The Future of Agricultural Tech</h3>
-                <p>The future of our Fertilizer Recommending Machine lies in the integration of Internet of Things (IoT) sensors and satellite imagery to provide even more precise autonomous farming solutions. We envision a world where soil sensors automatically transmit data to our engine, which then communicates directly with automated irrigation and fertilization systems to treat crops with microscopic precision—a concept known as precision agriculture. As our Machine Learning models continue to ingest more data from different geographical regions, the accuracy of our predictions will grow, allowing us to support a wider variety of crops and soil types. We are also exploring the use of drone technology to map farm health from the sky, feeding visual data into our YOLO-based disease detection models for large-scale agricultural monitoring. In the coming years, we aim to incorporate climate change predictive modeling to help farmers choose crops that are most likely to succeed in shifting weather patterns. Our ultimate vision is to create a fully integrated agricultural operating system that reduces human error, eliminates chemical runoff into local water supplies, and plays a key role in solving the global food security crisis as the world's population continues to grow toward 10 billion people by 2050.</p>
-            </div>
+        <div class="info-block">
+            <h3>The Role of Fertilizers and Their Uses</h3>
+            <p>
+                Fertilizers are the lifeblood of global food production, providing essential nutrients that are often depleted from soil through continuous cultivation. Primary macronutrients such as Nitrogen are responsible for leaf growth and the vibrant green color associated with healthy chlorophyll production, while Phosphorus is vital for strong root development, flower induction, and seed formation. Potassium acts as a regulator, strengthening the plant's immune system against diseases and ensuring efficient water movement within the cellular structure. Beyond these, secondary chemicals like Magnesium and Calcium provide the structural integrity required for plants to withstand environmental stress. Our system categorizes these into various types: nitrogenous fertilizers for vegetative growth, phosphatic for early development, and organic fertilizers like compost for long-term soil structure improvement. Proper usage of these chemicals ensures that the soil remains fertile for generations rather than being stripped of its vitality.
+            </p>
         </div>
-    </section>
 
-    <footer>
-        <p>&copy; 2025 MCR Construction. Powered by Wix and secured by Wix</p>
-    </footer>
+        <div class="info-block">
+            <h3>How It Empowers Farmers</h3>
+            <p>
+                For the modern farmer, this tool serves as a digital consultant that is available 24/7 to provide expert-level soil analysis and fertilizer recommendations. One of the greatest challenges farmers face is the rising cost of inputs; by using our Fertilizer Recommending Machine, farmers can avoid the expensive mistake of over-fertilization, which not only wastes money but also damages the soil through salt buildup. The system provides actionable insights that allow farmers to tailor their chemical applications to the specific needs of their unique land plots, leading to significantly higher crop yields and better produce quality. Furthermore, the early disease detection module helps farmers identify blight or pest infestations before they spread, potentially saving entire harvests from destruction.
+            </p>
+        </div>
 
-    <script src="script.js"></script>
+        <div class="info-block">
+            <h3>The Future of Agricultural Tech</h3>
+            <p>
+                The future of our Fertilizer Recommending Machine lies in the integration of Internet of Things (IoT) sensors and satellite imagery to provide even more precise autonomous farming solutions. We envision a world where soil sensors automatically transmit data to our engine, which then communicates directly with automated irrigation and fertilization systems to treat crops with microscopic precision—a concept known as precision agriculture. As our Machine Learning models continue to ingest more data from different geographical regions, the accuracy of our predictions will grow, allowing us to support a wider variety of crops and soil types.
+            </p>
+        </div>
+
+    </div>
+</section>
+
+<footer>
+    <p>&copy; 2025 MCR Construction. Powered by Wix and secured by Wix</p>
+</footer>
+
+<!-- ✅ FIXED -->
+<script src="{{ url_for('static', filename='script.js') }}"></script>
+
 </body>
-
-</html>   
+</html>
