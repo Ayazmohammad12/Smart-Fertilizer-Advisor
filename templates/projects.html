@@ -1,0 +1,433 @@
+<!DOCTYPE html>
+
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Fertilizer Recommending Machine</title>
+
+    <link rel="stylesheet" href="styles.css">
+
+    <style>
+
+        #project-content img, #project-content iframe {
+
+            border: 2px solid #333;
+
+            border-radius: 10px;
+
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+
+            max-width: 100%;
+
+        }
+
+        .active-btn {
+
+            background-color: #ff5722 !important;
+
+            color: white !important;
+
+        }
+
+        .video-container {
+
+            margin-top: 20px;
+
+            background: #000;
+
+            padding: 10px;
+
+            border-radius: 15px;
+
+            display: inline-block;
+
+        }
+
+
+
+        /* --- DARK GLOW THEME FOR CHEMICALS & FERTILIZERS --- */
+
+        .sub-menu {
+
+            margin-bottom: 20px;
+
+            display: flex;
+
+            justify-content: center;
+
+            gap: 15px;
+
+        }
+
+        .sub-btn {
+
+            padding: 10px 20px;
+
+            cursor: pointer;
+
+            border-radius: 5px;
+
+            border: 1px solid #ff5722;
+
+            background: #111; /* Black background */
+
+            color: #ff5722;
+
+            transition: 0.3s;
+
+            font-weight: bold;
+
+        }
+
+        /* Glow Effect for Sub-Buttons */
+
+        .sub-btn:hover {
+
+            background: #111;
+
+            color: white;
+
+            box-shadow: 0 0 15px #ff5722;
+
+            border-color: #fff;
+
+        }
+
+        .chem-grid {
+
+            display: grid;
+
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+
+            gap: 20px;
+
+            padding: 20px;
+
+        }
+
+        /* Uniform Black Card Style */
+
+        .chem-card, .fert-card {
+
+            background: #111;
+
+            color: white;
+
+            padding: 20px;
+
+            border-radius: 12px;
+
+            border: 1px solid #333;
+
+            transition: all 0.4s ease;
+
+            cursor: pointer;
+
+            text-align: center;
+
+        }
+
+        /* Glow Effect on Hover for all cards */
+
+        .chem-card:hover, .fert-card:hover {
+
+            transform: translateY(-8px);
+
+            box-shadow: 0 0 25px #ff5722;
+
+            border-color: #ff5722;
+
+        }
+
+       
+
+        /* Fade-In Animation */
+
+        .fade-in {
+
+            animation: fadeInAnim 0.8s ease-in-out;
+
+        }
+
+        @keyframes fadeInAnim {
+
+            from { opacity: 0; transform: translateY(10px); }
+
+            to { opacity: 1; transform: translateY(0); }
+
+        }
+
+
+
+        .fertilizer-info-box {
+
+            background: #111;
+
+            color: #eee;
+
+            padding: 25px;
+
+            border-radius: 15px;
+
+            text-align: left;
+
+            margin-top: 20px;
+
+            border: 1px solid #ff5722;
+
+            box-shadow: 0 0 15px rgba(255, 87, 34, 0.2);
+
+        }
+
+        .fertilizer-info-box h4 {
+
+            color: #ff5722;
+
+            margin-top: 0;
+
+        }
+
+    </style>
+
+</head>
+
+<body>
+
+
+
+    <header>
+
+        <div class="navbar-container">
+
+            <div class="logo">Fertilizer Recommending Machine</div>
+
+            <nav class="main-nav">
+
+                <a href="index.html" class="nav-button">Home</a>
+
+                <a href="projects.html" class="nav-button">Projects</a>
+
+                <a href="about.html" class="nav-button">About Us</a>
+
+            </nav>
+
+        </div>
+
+    </header>
+
+
+
+    <section class="projects-section">
+
+        <h2 style="text-align: center;">Our Agricultural Tech Projects</h2>
+
+        <div class="button-grid" style="display: flex; justify-content: center; gap: 20px; margin-bottom: 20px;">
+
+            <button class="project-btn" data-target="disease">Detecting Disease of a Plant</button>
+
+            <button class="project-btn" id="solution-btn" data-target="solutions">Detecting and Predicting the Solutions</button>
+
+            <button class="project-btn" data-target="chemicals">Information about Chemicals</button>
+
+        </div>
+
+
+
+        <div id="project-content" style="text-align: center; padding: 20px;">
+
+            <p>Click a button above to see details...</p>
+
+        </div>
+
+    </section>
+
+
+
+    <footer style="text-align: center; margin-top: 50px;">
+
+        <p>&copy; 2025 MCR Construction. Powered by Wix and secured by Wix</p>
+
+    </footer>
+
+
+
+    <script>
+
+        document.addEventListener('DOMContentLoaded', function() {
+
+            const buttons = document.querySelectorAll('.project-btn');
+
+            const contentDiv = document.getElementById('project-content');
+
+
+
+            const fertilizerData = {
+
+                nitrogen: "Nitrogen Fertilizers (e.g., Urea): Vital for chlorophyll production. It promotes rapid vegetative growth, lush green foliage, and high protein content in crops.",
+
+                phosphorus: "Phosphorus Fertilizers (e.g., DAP): Essential for energy transfer and root development. It ensures early plant maturity and improves flowering and seed production.",
+
+                potassium: "Potassium Fertilizers (e.g., MOP): Regulates water movement and activates enzymes. It enhances drought resistance and improves the quality and shelf life of fruits.",
+
+                organic: "Organic Fertilizers (e.g., Vermicompost): Naturally sourced nutrients that improve soil structure, water retention, and microbial activity for long-term sustainability.",
+
+                compound: "Compound Fertilizers (NPK): A balanced mix designed to provide all primary nutrients in one application, perfect for generalized soil enrichment."
+
+            };
+
+
+
+            buttons.forEach(button => {
+
+                button.addEventListener('click', function() {
+
+                    const target = this.getAttribute('data-target');
+
+
+
+                    if (target === 'disease') {
+
+                        window.location.href = "http://localhost:8501";
+
+                    }
+
+                   
+
+                    else if (target === 'solutions') {
+
+                        buttons.forEach(btn => btn.classList.remove('active-btn'));
+
+                        this.classList.add('active-btn');
+
+                        contentDiv.innerHTML = `
+
+                            <div class="video-container fade-in">
+
+                                <h3 style="color: white;">Live Disease Analysis System</h3>
+
+                                <img src="http://127.0.0.1:5000/video_feed" width="850" height="480" alt="Live AI Feed">
+
+                            </div>
+
+                        `;
+
+                    }
+
+                   
+
+                    else if (target === 'chemicals') {
+
+                        buttons.forEach(btn => btn.classList.remove('active-btn'));
+
+                        this.classList.add('active-btn');
+
+
+
+                        contentDiv.innerHTML = `
+
+                            <div class="sub-menu fade-in">
+
+                                <button class="sub-btn" id="btn-chem-list">Chemicals</button>
+
+                                <button class="sub-btn" id="btn-fert-list">Fertilizers</button>
+
+                            </div>
+
+                            <div id="sub-display" class="fade-in">
+
+                                <p style="color: #666;">Select a category to explore agricultural chemistry.</p>
+
+                            </div>
+
+                        `;
+
+
+
+                        document.getElementById('btn-chem-list').addEventListener('click', function() {
+
+                            document.getElementById('sub-display').innerHTML = `
+
+                                <div class="chem-grid fade-in">
+
+                                    <div class="chem-card"><h3>N</h3><p>Nitrogen</p></div>
+
+                                    <div class="chem-card"><h3>P</h3><p>Phosphorus</p></div>
+
+                                    <div class="chem-card"><h3>K</h3><p>Potassium</p></div>
+
+                                    <div class="chem-card"><h3>Mg</h3><p>Magnesium</p></div>
+
+                                    <div class="chem-card"><h3>Ca</h3><p>Calcium</p></div>
+
+                                </div>
+
+                            `;
+
+                        });
+
+
+
+                        document.getElementById('btn-fert-list').addEventListener('click', function() {
+
+                            document.getElementById('sub-display').innerHTML = `
+
+                                <h3 style="color: white;" class="fade-in">Select Fertilizer Type:</h3>
+
+                                <div class="chem-grid fade-in">
+
+                                    <div class="fert-card" onclick="showFert('nitrogen')"><h4>Nitrogenous</h4></div>
+
+                                    <div class="fert-card" onclick="showFert('phosphorus')"><h4>Phosphatic</h4></div>
+
+                                    <div class="fert-card" onclick="showFert('potassium')"><h4>Potassic</h4></div>
+
+                                    <div class="fert-card" onclick="showFert('organic')"><h4>Organic</h4></div>
+
+                                    <div class="fert-card" onclick="showFert('compound')"><h4>NPK Mix</h4></div>
+
+                                </div>
+
+                                <div id="fert-detail"></div>
+
+                            `;
+
+                        });
+
+                    }
+
+                });
+
+            });
+
+
+
+            window.showFert = function(type) {
+
+                const detailDiv = document.getElementById('fert-detail');
+
+                detailDiv.innerHTML = `
+
+                    <div class="fertilizer-info-box fade-in">
+
+                        <h4>Nutrient Description:</h4>
+
+                        <p>${fertilizerData[type]}</p>
+
+                    </div>
+
+                `;
+
+            };
+
+        });
+
+    </script>
+
+</body>
+
+</html>

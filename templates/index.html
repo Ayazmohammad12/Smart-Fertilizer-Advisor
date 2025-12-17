@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>fertilizer recommending machine</title>
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        /* Background Image Logic */
+        body {
+            margin: 0;
+            padding: 0;
+            min-height: 100vh;
+            position: relative;
+            font-family: Arial, sans-serif; /* Fallback font */
+        }
+
+        body::before {
+            content: "";
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            /* The image link you provided */
+            background-image: url('https://img.freepik.com/premium-photo/farmer-spreading-fertilizer-lush-green-field-nurturing-crops-bountiful-harvest_964444-32959.jpg');
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            /* Medium Transparency (0.5 = 50% opacity) */
+            opacity: 0.5; 
+            z-index: -1; /* Keeps image behind text */
+        }
+
+        /* Ensure content is visible over the background */
+        .hero-section {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 80vh;
+            text-align: center;
+            color: #333; /* Darker text for better contrast against light background */
+        }
+
+        h1 {
+            font-size: 2.5rem;
+            max-width: 800px;
+            margin-bottom: 20px;
+            text-shadow: 1px 1px 2px rgba(255,255,255,0.8); /* Optional: helps text pop */
+        }
+
+        .view-projects-button {
+            padding: 15px 30px;
+            background-color: #2e7d32; /* Example green color */
+            color: white;
+            text-decoration: none;
+            border-radius: 5px;
+            font-weight: bold;
+            transition: background 0.3s;
+        }
+
+        .view-projects-button:hover {
+            background-color: #1b5e20;
+        }
+
+        header, footer {
+            background-color: rgba(255, 255, 255, 0.8); /* Slight background for header/footer */
+            padding: 10px 0;
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <div class="navbar-container">
+            <div class="logo" style="font-weight: bold; text-align: center;">Fertilizer Recommending Machine</div>
+            <nav class="main-nav" style="text-align: center; margin-top: 10px;">
+                <a href="index.html" class="nav-button">Home</a>
+                <a href="projects.html" class="nav-button">Projects</a>
+                <a href="about.html" class="nav-button">About Us</a>
+            </nav>
+        </div>
+    </header>
+
+    <section id="home" class="hero-section">
+        <h1>Building a fertilizer machine which detects 
+            the damage and recommend the fertilizer</h1>
+        <div class="hero-actions">
+            <a href="projects.html" class="view-projects-button">View Projects</a>
+        </div>
+    </section>
+    
+    <footer style="text-align: center; position: absolute; bottom: 0; width: 100%;">
+        <p>&copy; 2025 MCR Construction. Powered by Wix and secured by Wix</p>
+    </footer>
+
+    <script src="script.js"></script>
+</body>
+</html>
