@@ -5,6 +5,7 @@ import base64
 from collections import deque
 from flask import Flask, Response, jsonify, request, render_template
 from flask_cors import CORS
+import os
 
 app = Flask(__name__)
 CORS(app)
@@ -206,10 +207,11 @@ def analysis():
 def project():
     return render_template("project.html")
 
-@app.route('/fourthpage')
-def fourthpage():
-    return render_template("fourthpage.html")
+@app.route('/about')
+def about():
+    return render_template("about.html")
 
 
 if __name__=="__main__":
-    app.run(host='0.0.0.0',port=5000,threaded=True)
+    port = int(os.environ.get("PORT", 10000))
+    app.run(host='0.0.0.0', port=port, threaded=True)
