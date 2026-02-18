@@ -38,9 +38,10 @@
         <div class="navbar-container">
             <div class="logo">Fertilizer Recommending Machine</div>
             <nav class="main-nav">
-                <a href="index" class="nav-button">Home</a>
-                <a href="projects" class="nav-button">Projects</a>
-                <a href="about" class="nav-button">About Us</a>
+                <a href="{{ url_for('index') }}" class="nav-button">Home</a>
+                <a href="{{ url_for('project') }}" class="nav-button">Projects</a>
+                <a href="{{ url_for('analysis') }}" class="nav-button">About Us</a>
+
             </nav>
         </div>
     </header>
@@ -76,4 +77,5 @@
     <script src="script.js"></script>
 </body>
 </html>   
+
 
