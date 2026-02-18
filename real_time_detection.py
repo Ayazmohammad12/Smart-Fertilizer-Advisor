@@ -3,7 +3,7 @@ import numpy as np
 import time
 import base64
 from collections import deque
-from flask import Flask, jsonify, request
+from flask import Flask, Response, jsonify, request, render_template
 from flask_cors import CORS
 
 app = Flask(__name__)
@@ -196,51 +196,20 @@ def detection_data():
 
 @app.route('/')
 def index():
-    return """
-    <body style="background:#000; color:white; font-family:sans-serif; text-align:center;">
-    <h1 style="color:#0f0;">🌿 SIMPLE PLANT MONITOR 🌿</h1>
+    return render_template("index.html")
 
-    <video id="video" autoplay style="display:none;"></video>
-    <canvas id="canvas" style="display:none;"></canvas>
+@app.route('/analysis')
+def analysis():
+    return render_template("analysis.html")
 
-    <img id="output" style="width:70%; border:4px solid #333; border-radius:15px;">
+@app.route('/project')
+def project():
+    return render_template("project.html")
 
-    <div id="data" style="margin-top:20px; font-size:24px;"></div>
+@app.route('/fourthpage')
+def fourthpage():
+    return render_template("fourthpage.html")
 
-    <script>
-    const video = document.getElementById('video');
-    const canvas = document.getElementById('canvas');
-    const output = document.getElementById('output');
-
-    navigator.mediaDevices.getUserMedia({ video: true })
-    .then(stream => { video.srcObject = stream; });
-
-    setInterval(()=>{
-        canvas.width = video.videoWidth;
-        canvas.height = video.videoHeight;
-        canvas.getContext('2d').drawImage(video,0,0);
-
-        fetch('/process_frame',{
-            method:'POST',
-            headers:{'Content-Type':'application/json'},
-            body:JSON.stringify({image:canvas.toDataURL('image/jpeg')})
-        })
-        .then(r=>r.json())
-        .then(d=>{
-            output.src="data:image/jpeg;base64,"+d.image;
-        });
-
-        fetch('/detection_data').then(r=>r.json()).then(d=>{
-            let color=d.disease.includes("HEALTHY")?"#0f0":"#f00";
-            document.getElementById('data').innerHTML=
-            `<span style="color:${color}; font-weight:bold;">${d.disease}</span><br>
-            <span style="font-size:18px; color:#ccc;">${d.solution}</span>`;
-        });
-
-    },500);
-    </script>
-    </body>
-    """
 
 if __name__=="__main__":
     app.run(host='0.0.0.0',port=5000,threaded=True)
