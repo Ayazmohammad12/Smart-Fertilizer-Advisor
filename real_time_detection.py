@@ -1,15 +1,16 @@
 import cv2
 import numpy as np
 import time
+import base64
 from collections import deque
-from flask import Flask, Response, jsonify
+from flask import Flask, jsonify, request
 from flask_cors import CORS
 
 app = Flask(__name__)
 CORS(app)
 
-DISPLAY_DURATION = 10  # seconds hold after leaf removed
-VOTE_FRAMES = 7        # smoothing window
+DISPLAY_DURATION = 10
+VOTE_FRAMES = 7
 
 DISEASE_DB = {
     "HEALTHY": {
@@ -65,21 +66,24 @@ DISEASE_DB = {
 current_state = "IDLE"
 active_info = None
 current_recommendation = {"plant":"Scanning...","disease":"None","solution":"Align Leaf"}
-leaf_present = False
 last_leaf_time = 0
-
 status_history = deque(maxlen=VOTE_FRAMES)
 
-def draw_ui(frame, box, state, info, timer_val, debug_text=""):
+# ---------------- UI DRAW ----------------
+
+def draw_ui(frame, box, state, info, debug_text=""):
     x1,y1,x2,y2 = box
     h,w = frame.shape[:2]
+
     overlay = frame.copy()
     cv2.rectangle(overlay,(w-400,0),(w,h),(20,20,20),-1)
     cv2.addWeighted(overlay,0.7,frame,0.3,0,frame)
 
     color=(0,255,255)
-    if state=="LOCKED" and info: color=info['color']
-    if state=="IDLE": color=(0,0,255)
+    if state=="LOCKED" and info:
+        color=info['color']
+    if state=="IDLE":
+        color=(0,0,255)
 
     l=40
     cv2.line(frame,(x1,y1),(x1+l,y1),color,3)
@@ -89,7 +93,6 @@ def draw_ui(frame, box, state, info, timer_val, debug_text=""):
 
     bx=w-370
     cv2.putText(frame,"PLANT SCANNER",(bx,50),1,1.5,(200,200,200),2)
-    cv2.putText(frame,f"DEBUG: {debug_text}",(20,h-20),1,0.8,(255,255,255),1)
 
     if state=="LOCKED" and info:
         cv2.putText(frame,info['title'],(bx,120),1,1.2,color,2)
@@ -99,12 +102,12 @@ def draw_ui(frame, box, state, info, timer_val, debug_text=""):
             cv2.putText(frame,"> "+f,(bx,y),1,1.0,(200,200,200),1)
             y+=35
         cv2.putText(frame,info['tip'],(bx,y+20),1,0.9,color,1)
-    elif state=="SCANNING":
-        cv2.putText(frame,"ANALYZING...",(bx,120),1,2.0,(0,255,255),2)
     else:
         cv2.putText(frame,"PLACE A LEAF",(bx,120),1,1.5,(0,0,255),2)
 
     return frame
+
+# ---------------- DETECTION ----------------
 
 def classify_leaf(hsv):
     green = cv2.inRange(hsv,(25,40,40),(90,255,255))
@@ -124,98 +127,120 @@ def classify_leaf(hsv):
     pp = cv2.countNonZero(purple)/total
 
     if gp > 0.45:
-        return "HEALTHY","Mostly Green"
+        return "HEALTHY"
     if pp > 0.10:
-        return "P_DEF","Purple detected"
+        return "P_DEF"
     if yp > 0.35:
-        return "N_DEF","Yellow dominant"
+        return "N_DEF"
     if yp > 0.20 and gp > 0.15:
-        return "FE_DEF","Yellow + green veins"
+        return "FE_DEF"
     if bp > 0.20:
-        return "K_DEF","Brown edges"
+        return "K_DEF"
     if wp > 0.20:
-        return "ZN_DEF","White patches"
+        return "ZN_DEF"
     if dp > 0.15:
-        return "FUNGAL","Dark spots"
-    return "MG_DEF","Mixed colors"
+        return "FUNGAL"
+    return "MG_DEF"
 
-def generate_frames():
-    global current_state, active_info, current_recommendation
-    global leaf_present, last_leaf_time
+# ---------------- FRAME PROCESSING ----------------
 
-    cap=cv2.VideoCapture(0)
-    cap.set(3,1280); cap.set(4,720)
+@app.route('/process_frame', methods=['POST'])
+def process_frame():
+    global current_state, active_info, current_recommendation, last_leaf_time
 
-    while True:
-        ret,frame = cap.read()
-        if not ret: break
-        frame=cv2.flip(frame,1)
+    data = request.json['image']
+    encoded = data.split(',')[1]
+    nparr = np.frombuffer(base64.b64decode(encoded), np.uint8)
+    frame = cv2.imdecode(nparr, cv2.IMREAD_COLOR)
+    frame = cv2.flip(frame,1)
 
-        box_s=400
-        x1,y1=100,(frame.shape[0]-box_s)//2
-        x2,y2=x1+box_s,y1+box_s
-        roi=frame[y1:y2,x1:x2]
+    box_s=400
+    x1,y1=100,(frame.shape[0]-box_s)//2
+    x2,y2=x1+box_s,y1+box_s
+    roi=frame[y1:y2,x1:x2]
 
-        hsv=cv2.cvtColor(roi,cv2.COLOR_BGR2HSV)
-        green_mask = cv2.inRange(hsv,(25,40,40),(90,255,255))
-        contours,_ = cv2.findContours(green_mask,cv2.RETR_EXTERNAL,cv2.CHAIN_APPROX_SIMPLE)
+    hsv=cv2.cvtColor(roi,cv2.COLOR_BGR2HSV)
+    green_mask = cv2.inRange(hsv,(25,40,40),(90,255,255))
+    contours,_ = cv2.findContours(green_mask,cv2.RETR_EXTERNAL,cv2.CHAIN_APPROX_SIMPLE)
 
-        if len(contours)>0 and cv2.contourArea(max(contours,key=cv2.contourArea))>5000:
-            leaf_present=True
-            last_leaf_time=time.time()
+    if len(contours)>0 and cv2.contourArea(max(contours,key=cv2.contourArea))>5000:
+        last_leaf_time=time.time()
+        status = classify_leaf(hsv)
+        status_history.append(status)
+        final_status = max(set(status_history), key=status_history.count)
 
-            status,debug = classify_leaf(hsv)
-            status_history.append(status)
+        active_info = DISEASE_DB[final_status]
+        current_state="LOCKED"
+        current_recommendation={
+            "plant":"LEAF",
+            "disease":active_info['title'],
+            "solution":active_info['tip']
+        }
+    else:
+        if time.time()-last_leaf_time > DISPLAY_DURATION:
+            current_state="IDLE"
+            active_info=None
+            current_recommendation={"plant":"Scanning...","disease":"None","solution":"Align Leaf"}
+            status_history.clear()
 
-            final_status = max(set(status_history), key=status_history.count)
+    frame=draw_ui(frame,(x1,y1,x2,y2),current_state,active_info)
 
-            active_info = DISEASE_DB[final_status]
-            current_state="LOCKED"
-            current_recommendation={"plant":"LEAF","disease":active_info['title'],"solution":active_info['tip']}
+    _,buffer=cv2.imencode('.jpg',frame)
+    img_base64 = base64.b64encode(buffer).decode('utf-8')
 
-        else:
-            if time.time()-last_leaf_time < DISPLAY_DURATION and active_info:
-                current_state="LOCKED"
-                debug="Holding last result"
-            else:
-                current_state="IDLE"
-                active_info=None
-                current_recommendation={"plant":"Scanning...","disease":"None","solution":"Align Leaf"}
-                status_history.clear()
-                debug="No leaf"
+    return jsonify({"image": img_base64})
 
-        frame=draw_ui(frame,(x1,y1,x2,y2),current_state,active_info,0,debug)
-        _,buffer=cv2.imencode('.jpg',frame)
-        yield(b'--frame\r\nContent-Type: image/jpeg\r\n\r\n'+buffer.tobytes()+b'\r\n')
-
-    cap.release()
-
-@app.route('/video_feed')
-def video_feed():
-    return Response(generate_frames(),mimetype='multipart/x-mixed-replace; boundary=frame')
+@app.route('/detection_data')
+def detection_data():
+    return jsonify(current_recommendation)
 
 @app.route('/')
 def index():
     return """
     <body style="background:#000; color:white; font-family:sans-serif; text-align:center;">
     <h1 style="color:#0f0;">🌿 SIMPLE PLANT MONITOR 🌿</h1>
-    <div style="display:flex; justify-content:center;">
-    <img src="/video_feed" style="width:70%; border:4px solid #333; border-radius:15px;">
-    </div>
-    <div id="data" style="margin-top:20px; font-size:24px;"></div>
-    <script>
-    setInterval(()=>{fetch('/detection_data').then(r=>r.json()).then(d=>{
-    let color=d.disease.includes("HEALTHY")?"#0f0":"#f00";
-    document.getElementById('data').innerHTML=
-    `<span style="color:${color}; font-weight:bold;">${d.disease}</span><br>
-    <span style="font-size:18px; color:#ccc;">${d.solution}</span>`;
-    });},500);
-    </script></body>
-    """
 
-@app.route('/detection_data')
-def detection_data():
-    return jsonify(current_recommendation)
+    <video id="video" autoplay style="display:none;"></video>
+    <canvas id="canvas" style="display:none;"></canvas>
+
+    <img id="output" style="width:70%; border:4px solid #333; border-radius:15px;">
+
+    <div id="data" style="margin-top:20px; font-size:24px;"></div>
+
+    <script>
+    const video = document.getElementById('video');
+    const canvas = document.getElementById('canvas');
+    const output = document.getElementById('output');
+
+    navigator.mediaDevices.getUserMedia({ video: true })
+    .then(stream => { video.srcObject = stream; });
+
+    setInterval(()=>{
+        canvas.width = video.videoWidth;
+        canvas.height = video.videoHeight;
+        canvas.getContext('2d').drawImage(video,0,0);
+
+        fetch('/process_frame',{
+            method:'POST',
+            headers:{'Content-Type':'application/json'},
+            body:JSON.stringify({image:canvas.toDataURL('image/jpeg')})
+        })
+        .then(r=>r.json())
+        .then(d=>{
+            output.src="data:image/jpeg;base64,"+d.image;
+        });
+
+        fetch('/detection_data').then(r=>r.json()).then(d=>{
+            let color=d.disease.includes("HEALTHY")?"#0f0":"#f00";
+            document.getElementById('data').innerHTML=
+            `<span style="color:${color}; font-weight:bold;">${d.disease}</span><br>
+            <span style="font-size:18px; color:#ccc;">${d.solution}</span>`;
+        });
+
+    },500);
+    </script>
+    </body>
+    """
 
 if __name__=="__main__":
     app.run(host='0.0.0.0',port=5000,threaded=True)
