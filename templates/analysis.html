@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Plant Health Analysis - Random Forest</title>
-    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
         body { background: #050505; color: white; font-family: sans-serif; text-align: center; }
@@ -402,4 +402,5 @@ function runRandomForest() {
 </body>
 
 </html>
+
 
