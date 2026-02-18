@@ -1,5 +1,7 @@
+flask
+gunicorn
 ultralytics
+torch
 opencv-python-headless
-streamlit
 Pillow
 numpy
